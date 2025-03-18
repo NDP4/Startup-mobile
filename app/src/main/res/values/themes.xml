@@ -15,5 +15,9 @@
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
 
-    <style name="Theme.Booking_bus" parent="Base.Theme.Booking_bus" />
+    <style name="Theme.Booking_bus" parent="Base.Theme.Booking_bus">
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@android:transition/fade</item>
+        <item name="android:windowExitTransition">@android:transition/fade</item>
+    </style>
 </resources>
