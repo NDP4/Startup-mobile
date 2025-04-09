@@ -13,7 +13,9 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.button.MaterialButton;
 import com.startup.booking_bus.api.ApiClient;
 import com.startup.booking_bus.api.ApiService;
+import com.startup.booking_bus.api.LogoutResponse;
 import com.startup.booking_bus.api.UserResponse;
+import com.startup.booking_bus.utils.SessionManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -87,16 +89,26 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void handleLogout() {
-        // Clear auth token and other saved data
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.clear();
-        editor.apply();
+        ApiService apiService = ApiClient.getClient(this);
+        apiService.logout().enqueue(new Callback<LogoutResponse>() {
+            @Override
+            public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
+                // Clear session
+                SessionManager sessionManager = new SessionManager(ProfileActivity.this);
+                sessionManager.clearSession();
 
-        // Navigate to login screen
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+                // Navigate to login screen
+                Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(Call<LogoutResponse> call, Throwable t) {
+                showError("Network error: " + t.getMessage());
+            }
+        });
     }
 
     private void showError(String message) {

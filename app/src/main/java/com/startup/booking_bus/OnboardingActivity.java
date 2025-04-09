@@ -39,7 +39,7 @@ public class OnboardingActivity extends AppCompatActivity {
 
         String[] titles = {
                 "Cari Bus Pilihan Anda",
-                "Pesan Tiket dengan Mudah",
+                "Pesan Bus dengan Mudah",
                 "Nikmati Perjalanan Anda"
         };
 

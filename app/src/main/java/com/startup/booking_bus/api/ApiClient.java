@@ -4,6 +4,8 @@ package com.startup.booking_bus.api;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.startup.booking_bus.utils.SessionManager;
+
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -19,7 +21,6 @@ public class ApiClient {
     public static ApiService getClient(Context context) {
         if (retrofit == null) {
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder()
-                    // Add timeouts
                     .connectTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS);
@@ -31,13 +32,18 @@ public class ApiClient {
 
             // Add token interceptor
             httpClient.addInterceptor(chain -> {
-                SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
-                String token = prefs.getString("token", "");
+                // Get token from SessionManager instead of SharedPreferences directly
+                SessionManager sessionManager = new SessionManager(context);
+                String token = sessionManager.getToken();
 
                 Request original = chain.request();
                 Request.Builder requestBuilder = original.newBuilder()
-                        .header("Authorization", "Bearer " + token)
                         .header("Accept", "application/json");
+
+                // Only add Authorization header if token exists
+                if (token != null && !token.isEmpty()) {
+                    requestBuilder.header("Authorization", "Bearer " + token);
+                }
 
                 Request request = requestBuilder.build();
                 return chain.proceed(request);
@@ -50,5 +56,10 @@ public class ApiClient {
                     .build();
         }
         return retrofit.create(ApiService.class);
+    }
+
+    // Add method to clear Retrofit instance when logging out
+    public static void clearInstance() {
+        retrofit = null;
     }
 }

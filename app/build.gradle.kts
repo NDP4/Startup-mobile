@@ -49,4 +49,6 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    implementation("com.github.tapadoo:alerter:7.2.4")
 }

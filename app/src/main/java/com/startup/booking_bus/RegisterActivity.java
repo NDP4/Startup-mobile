@@ -4,10 +4,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.startup.booking_bus.api.ApiClient;
@@ -21,6 +25,10 @@ import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
     private TextInputEditText etName, etEmail, etPhone, etPassword, etConfirmPassword;
+    private View headerContainer;
+    private TextView tvSwipeHint;
+    private LottieAnimationView swipeAnimation;
+    private float originalY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +36,44 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         // Initialize views
+        headerContainer = findViewById(R.id.headerContainer);
+        tvSwipeHint = findViewById(R.id.tvSwipeHint);
+        swipeAnimation = findViewById(R.id.swipeAnimation);
         etName = findViewById(R.id.et_name);
         etEmail = findViewById(R.id.et_email);
         etPhone = findViewById(R.id.et_phone);
         etPassword = findViewById(R.id.et_password);
         etConfirmPassword = findViewById(R.id.et_confirm_password);
         MaterialButton btnRegister = findViewById(R.id.btn_register);
+        View bottomSheet = findViewById(R.id.bottomSheet);
+
+        // Store original position
+        headerContainer.post(() -> originalY = headerContainer.getY());
+
+        // Setup animation
+        swipeAnimation.setSpeed(1.5f);
+        swipeAnimation.playAnimation();
+
+        // Setup bottom sheet behavior
+        BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {}
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                // Move and scale welcome text
+                float targetY = originalY - (originalY * 0.7f * slideOffset);
+                float targetScale = 1 - (0.2f * slideOffset);
+                headerContainer.setY(targetY);
+                headerContainer.setScaleX(targetScale);
+                headerContainer.setScaleY(targetScale);
+
+                // Fade out swipe hint and animation
+                tvSwipeHint.setAlpha(1 - slideOffset);
+                swipeAnimation.setAlpha(1 - slideOffset);
+            }
+        });
 
         btnRegister.setOnClickListener(v -> validateAndRegister());
     }

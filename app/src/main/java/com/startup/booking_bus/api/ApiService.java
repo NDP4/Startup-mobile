@@ -17,4 +17,7 @@ public interface ApiService {
 
     @GET("api/user/detail")
     Call<UserResponse> getUserProfile();
+
+    @POST("api/user/logout")
+    Call<LogoutResponse> logout();
 }

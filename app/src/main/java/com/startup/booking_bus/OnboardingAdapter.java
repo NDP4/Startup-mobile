@@ -33,7 +33,7 @@ public class OnboardingAdapter extends RecyclerView.Adapter<OnboardingAdapter.On
     @Override
     public void onBindViewHolder(@NonNull OnboardingViewHolder holder, int position) {
         holder.animationView.setAnimation(layouts[position]);
-        holder.animationView.setRepeatCount(LottieDrawable.INFINITE); // Use LottieDrawable.INFINITE
+        holder.animationView.setRepeatCount(LottieDrawable.INFINITE);
         holder.animationView.playAnimation();
         holder.tvTitle.setText(titles[position]);
         holder.tvDescription.setText(descriptions[position]);
